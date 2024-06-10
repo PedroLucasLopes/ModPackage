@@ -1,27 +1,26 @@
 package net.pedrolucaslopes.modpackage;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.pedrolucaslopes.modpackage.deathcoodinates.PlayerDeathCoordinates;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(ModPackage.MOD_ID)
 public class ModPackage
 {
-    // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "modpackage";
-    // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public ModPackage()
@@ -43,7 +42,13 @@ public class ModPackage
     {
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    @SubscribeEvent
+    public void onPlayerDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            PlayerDeathCoordinates.getCoordinates(player);
+        }
+    }
+
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
     {
