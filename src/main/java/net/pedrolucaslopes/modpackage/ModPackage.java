@@ -2,7 +2,10 @@ package net.pedrolucaslopes.modpackage;
 
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -14,9 +17,10 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.pedrolucaslopes.modpackage.deathcoodinates.PlayerDeathCoordinates;
+import net.pedrolucaslopes.modpackage.deathcoodinates.PlayerDeathWaypoint;
+import net.pedrolucaslopes.modpackage.deathcoodinates.PlayerDeathWaypointRenderer;
 import org.slf4j.Logger;
 
-// The value here should match an entry in the META-INF/mods.toml file
 @Mod(ModPackage.MOD_ID)
 public class ModPackage
 {
@@ -37,15 +41,27 @@ public class ModPackage
     {
     }
 
-    // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
+    }
+
+    public void setDeathWaypoint(Player player) {
+        if (player != null) {
+            Vec3 playerCoordinates = player.position();
+            Level world = player.level();
+
+            if(!world.isClientSide){
+                PlayerDeathWaypoint waypoint = new PlayerDeathWaypoint(ModEntities.DEATH_WAYPOINT.get(), world);
+                waypoint.setPos(playerCoordinates.x, playerCoordinates.y, playerCoordinates.z);
+                world.addFreshEntity(waypoint);
+            }
+        }
     }
 
     @SubscribeEvent
     public void onPlayerDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof Player player) {
-            PlayerDeathCoordinates.getCoordinates(player);
+            PlayerDeathCoordinates.getDeathCoordinates(player);
         }
     }
 
@@ -61,6 +77,11 @@ public class ModPackage
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
+        }
+
+        @SubscribeEvent
+        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(ModEntities.DEATH_WAYPOINT.get(), PlayerDeathWaypointRenderer::new);
         }
     }
 }
