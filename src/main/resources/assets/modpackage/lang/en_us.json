@@ -1,0 +1,9 @@
+{
+  "item.modpackage.sapphire": "Sapphire",
+  "item.modpackage.raw_sapphire": "Raw Sapphire",
+
+  "block.modpackage.sapphire_block": "Block of Sapphire",
+  "block.modpackage.raw_sapphire_block": "Raw Block of Sapphire",
+
+  "creativetab.mod_tab": "Sapphire Tab"
+}

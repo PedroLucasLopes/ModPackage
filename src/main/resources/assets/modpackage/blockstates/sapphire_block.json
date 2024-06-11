@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "modpackage:block/sapphire_block"
+    }
+  }
+}
